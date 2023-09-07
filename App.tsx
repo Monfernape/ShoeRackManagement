@@ -1,15 +1,18 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import { PaperProvider, Button } from "react-native-paper";
-
+import { StyleSheet, View } from "react-native";
+import { PaperProvider, Button,Text } from "react-native-paper";
+import {AddUser} from './views/AddUser'
 export default function App() {
   return (
+  
     <PaperProvider>
-      <View style={styles.container}>
-        <Text>Open up App.tsx to start working on your app!</Text>
-        <Button>Press Me</Button>
-        <StatusBar style="auto" />
-      </View>
+  {/* <View style={styles.container}>
+      <Text variant="headlineLarge">Shoe Rack</Text>
+         <Text>Open up App.tsx to start working on your app!</Text>
+      <Button>Press Me</Button>
+         <StatusBar style="auto" />
+       </View> */}
+    <AddUser />
     </PaperProvider>
   );
 }
