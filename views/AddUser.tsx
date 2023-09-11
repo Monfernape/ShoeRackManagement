@@ -1,23 +1,19 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
-
+import { StyleSheet, SafeAreaView, TouchableOpacity } from "react-native";
 import { PaperProvider, Button, Text, TextInput } from "react-native-paper";
 import { supabase } from "../services/supabase";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import DropDown from "react-native-paper-dropdown";
+import { timeList } from "../constant/constant";
 export const AddUser = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [cnic, setCnic] = useState("");
   const [ehadDuration, setEhadDuration] = useState("");
-  const [date, setDate] = useState();
-  const [time, setTime] = useState({
-    startTime: new Date(),
-    endTime: new Date(),
-  });
-
-  const [show, setShow] = useState(false);
-  const [showE, setShowE] = useState(false);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [showDropDown, setShowDropDown] = useState(false);
+  const [showDropDownB, setShowDropDownB] = useState(false);
 
   const styles = StyleSheet.create({
     mt: {
@@ -28,10 +24,6 @@ export const AddUser = () => {
       paddingTop: 12,
       marginLeft: 15,
       color: "#3d3e40",
-    },
-    touchable: { backgroundColor: "#E8E1ED", marginTop: 5, height: 50 },
-    red: {
-      color: "red",
     },
   });
 
@@ -45,35 +37,12 @@ export const AddUser = () => {
         phone: phone,
         cnic: cnic,
         ehadDuration: ehadDuration,
-        // date : date,
-        time: time,
+        startTime: startTime,
+        endTime: endTime,
       })
       .then((response) => {
         console.log("response", response);
       });
-  };
-
-  const onChangeStart = (e: any, selectedTime: any) => {
-    const currentDate = selectedTime;
-    console.log("currentDate", currentDate);
-
-    setShow(false);
-
-    setTime({ ...time, startTime: currentDate });
-  };
-  const onChangeEnd = (e: any, selectedTime: any) => {
-    const currentTime = selectedTime;
-    console.log("currentTime", currentTime);
-
-    setShowE(false);
-    setTime({ ...time, endTime: currentTime });
-  };
-
-  const showStartTimepicker = () => {
-    setShow(true);
-  };
-  const showEndTimepicker = () => {
-    setShowE(true);
   };
 
   return (
@@ -91,68 +60,53 @@ export const AddUser = () => {
         onChangeText={(text) => setName(text)}
         style={styles.mt}
       />
-      {/* <TextInput
-      label="asd"
-      value={asd}
-      onChangeText={text => setAsd(text)}
-    /> */}
+
       <TextInput
         label="Phone"
         value={phone}
         onChangeText={(text) => setPhone(text)}
         style={styles.mt}
+        keyboardType={"numeric"}
       />
       <TextInput
         label="CNIC"
         value={cnic}
         onChangeText={(text) => setCnic(text)}
         style={styles.mt}
+        keyboardType={"numeric"}
       />
       <TextInput
         label="Ehad Duration (Years)"
         value={ehadDuration}
         onChangeText={(text) => setEhadDuration(text)}
         style={styles.mt}
+        keyboardType={"numeric"}
       />
 
-      <TouchableOpacity onPress={showStartTimepicker} style={styles.touchable}>
-        <Text style={styles.text}>
-          Start Time:{""}
-          {time.startTime.toLocaleString("en-US", {
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-          })}
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={showEndTimepicker} style={styles.touchable}>
-        <Text style={styles.text}>
-          End Time:{""}
-          {time.endTime.toLocaleString("en-US", {
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-          })}
-        </Text>
-      </TouchableOpacity>
-
-      {show == true && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={time.startTime}
-          mode={"time"}
-          onChange={onChangeStart}
+      <SafeAreaView style={styles.mt}>
+        <DropDown
+          label={"Start Time"}
+          visible={showDropDown}
+          showDropDown={() => setShowDropDown(true)}
+          onDismiss={() => setShowDropDown(false)}
+          value={startTime}
+          setValue={setStartTime}
+          list={timeList}
+          dropDownStyle={{ marginTop: 5 }}
         />
-      )}
-      {showE == true && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={time.endTime}
-          mode={"time"}
-          onChange={onChangeEnd}
+      </SafeAreaView>
+      <SafeAreaView style={styles.mt}>
+        <DropDown
+          label={"End Time"}
+          visible={showDropDownB}
+          showDropDown={() => setShowDropDownB(true)}
+          onDismiss={() => setShowDropDownB(false)}
+          value={endTime}
+          setValue={setEndTime}
+          list={timeList}
+          dropDownStyle={{ marginTop: 5 }}
         />
-      )}
+      </SafeAreaView>
 
       <Button
         mode="contained"
@@ -161,7 +115,6 @@ export const AddUser = () => {
       >
         Add User
       </Button>
-      {/* <StatusBar style="auto" /> */}
     </PaperProvider>
   );
 };
