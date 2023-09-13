@@ -1,3 +1,17 @@
+export const roleList = [
+  {  label: "Incharge",
+  value: "Incharge",
+  },
+  {  label: "Vice Incharge",
+  value: "Vice Incharge",
+  },
+  {  label: "Regular",
+  value: "Regular",
+  }
+
+]
+
+
 export const timeList = [
     {
       label: "1:00 am",

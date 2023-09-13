@@ -1,19 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, SafeAreaView, TouchableOpacity } from "react-native";
 import { PaperProvider, Button, Text, TextInput } from "react-native-paper";
 import { supabase } from "../services/supabase";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import DropDown from "react-native-paper-dropdown";
-import { timeList } from "../constant/constant";
-export const AddUser = () => {
+import { timeList, roleList } from "../constant/constant";
+
+export const AddUser = ({ navigation, route }: any) => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [cnic, setCnic] = useState("");
   const [ehadDuration, setEhadDuration] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [role, setRole] = useState("");
   const [showDropDown, setShowDropDown] = useState(false);
   const [showDropDownB, setShowDropDownB] = useState(false);
+  const [showDropDownR, setShowDropDownR] = useState(false);
+
+  const { id } = route.params;
 
   const styles = StyleSheet.create({
     mt: {
@@ -27,9 +31,28 @@ export const AddUser = () => {
     },
   });
 
-  const handleAddUser = () => {
-    console.log("caled");
+  useEffect(() => {
+    if (id) {
+      supabase
+        .from("users")
+        .select()
+        .eq("id", id)
+        .single()
+        .then((res: any) => {
+          console.log("response", res.data);
 
+          setName(res.data.name);
+          setPhone(res.data.phone);
+          setCnic(res.data.cnic);
+          setEhadDuration(res.data.ehadDuration);
+          setRole(res.data.role);
+          setStartTime(res.data.startTime);
+          setEndTime(res.data.endTime);
+        });
+    }
+  }, [id]);
+
+  const handleAddUser = () => {
     supabase
       .from("users")
       .insert({
@@ -37,11 +60,43 @@ export const AddUser = () => {
         phone: phone,
         cnic: cnic,
         ehadDuration: ehadDuration,
+        role: role,
         startTime: startTime,
         endTime: endTime,
       })
       .then((response) => {
         console.log("response", response);
+        setName("");
+        setPhone("");
+        setCnic("");
+        setEhadDuration("");
+        setRole("");
+        setStartTime("");
+        setEndTime("");
+      });
+  };
+  const handleUpdateUser = () => {
+    supabase
+      .from("users")
+      .update({
+        name: name,
+        phone: phone,
+        cnic: cnic,
+        ehadDuration: ehadDuration,
+        role: role,
+        startTime: startTime,
+        endTime: endTime,
+      })
+      .eq("id", id)
+      .then((response) => {
+        setName("");
+        setPhone("");
+        setCnic("");
+        setEhadDuration("");
+        setRole("");
+        setStartTime("");
+        setEndTime("");
+        navigation.goBack();
       });
   };
 
@@ -51,7 +106,7 @@ export const AddUser = () => {
         style={{ marginTop: 50, textAlign: "center" }}
         variant="headlineLarge"
       >
-        Add User
+        {id ? " Edit User " : "Add User"}
       </Text>
 
       <TextInput
@@ -82,7 +137,18 @@ export const AddUser = () => {
         style={styles.mt}
         keyboardType={"numeric"}
       />
-
+      <SafeAreaView style={styles.mt}>
+        <DropDown
+          label={"Role"}
+          visible={showDropDownR}
+          showDropDown={() => setShowDropDownR(true)}
+          onDismiss={() => setShowDropDownR(false)}
+          value={role}
+          setValue={setRole}
+          list={roleList}
+          dropDownStyle={{ marginTop: 5 }}
+        />
+      </SafeAreaView>
       <SafeAreaView style={styles.mt}>
         <DropDown
           label={"Start Time"}
@@ -108,13 +174,23 @@ export const AddUser = () => {
         />
       </SafeAreaView>
 
-      <Button
-        mode="contained"
-        style={{ width: 120, marginTop: 15, marginLeft: 130 }}
-        onPress={() => handleAddUser()}
-      >
-        Add User
-      </Button>
+      {id ? (
+        <Button
+          mode="contained"
+          style={{ width: 140, marginTop: 15, marginLeft: 130 }}
+          onPress={() => handleUpdateUser()}
+        >
+          Update User
+        </Button>
+      ) : (
+        <Button
+          mode="contained"
+          style={{ width: 120, marginTop: 15, marginLeft: 130 }}
+          onPress={() => handleAddUser()}
+        >
+          Add User
+        </Button>
+      )}
     </PaperProvider>
   );
 };
